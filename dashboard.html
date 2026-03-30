@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ダッシュボード | 産廃サーチ 管理画面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a73e8;
+  --primary-light: #e8f0fe;
+  --on-primary: #fff;
+  --surface: #ffffff;
+  --surface-variant: #f1f3f4;
+  --surface-container: #f8f9fa;
+  --outline: #dadce0;
+  --on-surface: #1f1f1f;
+  --on-surface-variant: #444746;
+  --secondary: #34a853;
+  --secondary-light: #e6f4ea;
+  --error: #ea4335;
+  --error-light: #fce8e6;
+  --warning: #f9ab00;
+  --warning-light: #fef7e0;
+  --tertiary: #9334e6;
+  --tertiary-light: #f3e8fd;
+  --orange: #fa7b17;
+  --orange-light: #fef0e1;
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-3: 0 10px 20px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.05);
+  --transition: 0.2s ease;
+}
+
+html { font-size: 14px; }
+body {
+  font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--outline);
+  text-decoration: none;
+  color: var(--on-surface);
+}
+.sidebar-logo .logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.sidebar-logo .logo-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 8px 8px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-size: 0.93rem;
+  font-weight: 400;
+  transition: background var(--transition), color var(--transition);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+.nav-item:hover {
+  background: var(--surface-variant);
+  color: var(--on-surface);
+}
+.nav-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+}
+.nav-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.nav-item .material-symbols-outlined {
+  font-size: 22px;
+  width: 24px;
+  text-align: center;
+}
+
+/* ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(26,115,232,0.15);
+  transform: scale(0);
+  animation: ripple-anim 0.5s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-footer .user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.sidebar-footer .user-info {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar-footer .user-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-footer .user-role {
+  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+}
+.sidebar-footer .logout-btn {
+  background: none;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), color var(--transition);
+}
+.sidebar-footer .logout-btn:hover {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+/* ===== MAIN ===== */
+.main {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--topbar-height);
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  color: var(--on-surface-variant);
+  transition: background var(--transition);
+}
+.hamburger:hover {
+  background: var(--surface-variant);
+}
+.topbar-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+}
+.breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-icon-btn {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--on-surface-variant);
+  transition: background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topbar-icon-btn:hover {
+  background: var(--surface-variant);
+}
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background: var(--error);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+}
+.topbar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(12deg); }
+  30% { transform: rotate(-10deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+}
+.bell-animate {
+  animation: bell-shake 0.6s ease;
+}
+.bell-loop .material-symbols-outlined {
+  animation: bell-shake 0.8s ease infinite;
+  animation-delay: 3s;
+}
+
+/* ===== CONTENT ===== */
+.content {
+  padding: 24px 28px 40px;
+  max-width: 1400px;
+}
+
+/* ===== STAT CARDS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: default;
+}
+.stat-card:hover {
+  box-shadow: var(--shadow-2);
+  transform: translateY(-1px);
+}
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+.stat-icon.green { background: var(--secondary-light); color: var(--secondary); }
+.stat-icon.purple { background: var(--tertiary-light); color: var(--tertiary); }
+.stat-icon.orange { background: var(--orange-light); color: var(--orange); }
+.stat-body { flex: 1; min-width: 0; }
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+.stat-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  font-family: 'DM Sans', 'Noto Sans JP', sans-serif;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.stat-trend {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.stat-trend.up { color: var(--secondary); }
+.stat-trend.down { color: var(--error); }
+.stat-trend .material-symbols-outlined { font-size: 16px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  transition: box-shadow var(--transition);
+}
+.card:hover {
+  box-shadow: var(--shadow-2);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.card-link {
+  font-size: 0.8rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity var(--transition);
+}
+.card-link:hover { opacity: 0.8; }
+.card-body {
+  padding: 0 22px 22px;
+}
+
+/* ===== CHARTS ROW ===== */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 200px;
+  padding-top: 10px;
+  border-bottom: 1px solid var(--outline);
+  position: relative;
+}
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+}
+.bar {
+  width: 100%;
+  max-width: 36px;
+  background: var(--primary);
+  border-radius: 6px 6px 0 0;
+  min-height: 4px;
+  transition: height 0.8s ease, background var(--transition);
+  cursor: pointer;
+  position: relative;
+}
+.bar:hover {
+  background: #1557b0;
+}
+.bar-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--on-surface);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+.bar-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--on-surface);
+}
+.bar:hover .bar-tooltip {
+  opacity: 1;
+}
+.bar-label {
+  font-size: 0.68rem;
+  color: var(--on-surface-variant);
+  padding-top: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.chart-y-axis {
+  position: absolute;
+  left: -8px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.chart-y-label {
+  font-size: 0.65rem;
+  color: var(--on-surface-variant);
+  font-family: 'DM Sans', sans-serif;
+  transform: translateX(-100%);
+  padding-right: 8px;
+}
+
+/* Donut Chart */
+.donut-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 10px 0;
+}
+.donut-chart {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  background: var(--surface);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.donut-center-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1;
+}
+.donut-center-label {
+  font-size: 0.65rem;
+  color: var(--on-surface-variant);
+  margin-top: 2px;
+}
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.legend-label { flex: 1; color: var(--on-surface-variant); }
+.legend-value { font-weight: 600; font-family: 'DM Sans', sans-serif; }
+
+/* ===== TABLE ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  border-bottom: 1px solid var(--outline);
+  white-space: nowrap;
+}
+.data-table tbody tr {
+  transition: background var(--transition);
+}
+.data-table tbody tr:hover {
+  background: var(--surface-variant);
+}
+.data-table tbody td {
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-success { background: var(--secondary-light); color: var(--secondary); }
+.badge-warning { background: var(--warning-light); color: #a36d00; }
+.badge-error { background: var(--error-light); color: var(--error); }
+.badge-info { background: var(--primary-light); color: var(--primary); }
+.badge-purple { background: var(--tertiary-light); color: var(--tertiary); }
+
+.search-query {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== BOTTOM ROW ===== */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.company-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.company-list-item:last-child { border-bottom: none; }
+.company-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-surface-variant);
+  flex-shrink: 0;
+}
+.company-info { flex: 1; min-width: 0; }
+.company-name {
+  font-weight: 500;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.company-date {
+  font-size: 0.72rem;
+  color: var(--on-surface-variant);
+}
+.company-tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--surface-variant);
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.alert-item:last-child { border-bottom: none; }
+.alert-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.alert-icon.warn { background: var(--warning-light); color: var(--warning); }
+.alert-icon.err { background: var(--error-light); color: var(--error); }
+.alert-icon.info { background: var(--primary-light); color: var(--primary); }
+.alert-body { flex: 1; }
+.alert-title {
+  font-weight: 500;
+  font-size: 0.88rem;
+  margin-bottom: 2px;
+}
+.alert-desc {
+  font-size: 0.78rem;
+  color: var(--on-surface-variant);
+}
+.alert-time {
+  font-size: 0.7rem;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+/* ===== OVERLAY ===== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 90;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .content {
+    padding: 16px 16px 32px;
+  }
+  .topbar {
+    padding: 0 16px;
+  }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 1.3rem; }
+  .donut-wrapper { flex-direction: column; }
+  .breadcrumb { display: none; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="#" class="sidebar-logo">
+    <div class="logo-icon">
+      <span class="material-symbols-outlined" style="font-size:20px;">recycling</span>
+    </div>
+    <span class="logo-text">産廃サーチ</span>
+  </a>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-ripple>
+      <span class="material-symbols-outlined">dashboard</span>
+      ダッシュボード
+    </a>
+    <a href="search.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">search</span>
+      AI検索
+    </a>
+    <a href="companies.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">business</span>
+      業者一覧
+    </a>
+    <a href="company-register.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">add_business</span>
+      業者登録
+    </a>
+    <a href="#" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">category</span>
+      品目マスタ
+    </a>
+    <a href="#" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">settings</span>
+      設定
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar">管</div>
+    <div class="user-info">
+      <div class="user-name">管理者</div>
+      <div class="user-role">システム管理</div>
+    </div>
+    <button class="logout-btn" title="ログアウト">
+      <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" id="hamburgerBtn">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <div>
+        <div class="topbar-title">ダッシュボード</div>
+        <div class="breadcrumb">
+          <a href="#">ホーム</a>
+          <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
+          <span>ダッシュボード</span>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-icon-btn bell-loop" id="bellBtn">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="notification-badge">3</span>
+      </button>
+      <div class="topbar-avatar">管</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <span class="material-symbols-outlined">domain</span>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">登録業者数</div>
+          <div class="stat-value"><span class="count-up" data-target="1247">0</span><span style="font-size:0.85rem;font-weight:400;color:var(--on-surface-variant)">社</span></div>
+          <div class="stat-trend up">
+            <span class="material-symbols-outlined">trending_up</span>
+            +12% vs先月
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <span class="material-symbols-outlined">manage_search</span>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">今月の検索数</div>
+          <div class="stat-value"><span class="count-up" data-target="3842">0</span><span style="font-size:0.85rem;font-weight:400;color:var(--on-surface-variant)">件</span></div>
+          <div class="stat-trend up">
+            <span class="material-symbols-outlined">trending_up</span>
+            +23% vs先月
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">
+          <span class="material-symbols-outlined">handshake</span>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">マッチング成立</div>
+          <div class="stat-value"><span class="count-up" data-target="186">0</span><span style="font-size:0.85rem;font-weight:400;color:var(--on-surface-variant)">件</span></div>
+          <div class="stat-trend up">
+            <span class="material-symbols-outlined">trending_up</span>
+            +8% vs先月
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">
+          <span class="material-symbols-outlined">person_add</span>
+        </div>
+        <div class="stat-body">
+          <div class="stat-label">新規登録(今月)</div>
+          <div class="stat-value"><span class="count-up" data-target="34">0</span><span style="font-size:0.85rem;font-weight:400;color:var(--on-surface-variant)">社</span></div>
+          <div class="stat-trend down">
+            <span class="material-symbols-outlined">trending_down</span>
+            -5% vs先月
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+      <!-- Bar Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">検索数の推移</div>
+          <a href="#" class="card-link">詳細</a>
+        </div>
+        <div class="card-body">
+          <div class="bar-chart" id="barChart">
+            <div class="bar-col"><div class="bar" data-height="45" style="height:0"><div class="bar-tooltip">2,150件</div></div><div class="bar-label">4月</div></div>
+            <div class="bar-col"><div class="bar" data-height="52" style="height:0"><div class="bar-tooltip">2,480件</div></div><div class="bar-label">5月</div></div>
+            <div class="bar-col"><div class="bar" data-height="48" style="height:0"><div class="bar-tooltip">2,290件</div></div><div class="bar-label">6月</div></div>
+            <div class="bar-col"><div class="bar" data-height="60" style="height:0"><div class="bar-tooltip">2,860件</div></div><div class="bar-label">7月</div></div>
+            <div class="bar-col"><div class="bar" data-height="55" style="height:0"><div class="bar-tooltip">2,620件</div></div><div class="bar-label">8月</div></div>
+            <div class="bar-col"><div class="bar" data-height="63" style="height:0"><div class="bar-tooltip">3,000件</div></div><div class="bar-label">9月</div></div>
+            <div class="bar-col"><div class="bar" data-height="58" style="height:0"><div class="bar-tooltip">2,760件</div></div><div class="bar-label">10月</div></div>
+            <div class="bar-col"><div class="bar" data-height="70" style="height:0"><div class="bar-tooltip">3,340件</div></div><div class="bar-label">11月</div></div>
+            <div class="bar-col"><div class="bar" data-height="65" style="height:0"><div class="bar-tooltip">3,100件</div></div><div class="bar-label">12月</div></div>
+            <div class="bar-col"><div class="bar" data-height="72" style="height:0"><div class="bar-tooltip">3,430件</div></div><div class="bar-label">1月</div></div>
+            <div class="bar-col"><div class="bar" data-height="68" style="height:0"><div class="bar-tooltip">3,240件</div></div><div class="bar-label">2月</div></div>
+            <div class="bar-col"><div class="bar" data-height="80" style="height:0"><div class="bar-tooltip">3,842件</div></div><div class="bar-label">3月</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">品目別検索割合</div>
+          <a href="#" class="card-link">詳細</a>
+        </div>
+        <div class="card-body">
+          <div class="donut-wrapper">
+            <div class="donut-chart" id="donutChart">
+              <div class="donut-center">
+                <div class="donut-center-value">3,842</div>
+                <div class="donut-center-label">総検索数</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#1a73e8"></div>
+                <span class="legend-label">汚泥</span>
+                <span class="legend-value">35%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#34a853"></div>
+                <span class="legend-label">廃プラスチック</span>
+                <span class="legend-value">20%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#f9ab00"></div>
+                <span class="legend-label">廃油</span>
+                <span class="legend-value">15%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#9334e6"></div>
+                <span class="legend-label">がれき類</span>
+                <span class="legend-value">12%</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#dadce0"></div>
+                <span class="legend-label">その他</span>
+                <span class="legend-value">18%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Table -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-header">
+        <div class="card-title">最近の検索</div>
+        <a href="#" class="card-link">すべて見る</a>
+      </div>
+      <div class="card-body" style="padding-top:0;overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>日時</th>
+              <th>検索内容</th>
+              <th>マッチ件数</th>
+              <th>ステータス</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-30 14:23</td>
+              <td class="search-query">ビル地下の受水槽汚泥を処理してくれる業者を探しています</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">3件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-30 13:15</td>
+              <td class="search-query">FRP廃材のリサイクル処理ができる収集運搬業者</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">2件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-30 11:48</td>
+              <td class="search-query">大阪市内で廃プラスチック類の中間処理ができる業者</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">5件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-30 10:32</td>
+              <td class="search-query">建設現場から出るがれき類の処分先を探しています</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">4件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-29 16:55</td>
+              <td class="search-query">食品工場の廃油を定期回収してくれるリサイクル業者</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">3件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-29 15:20</td>
+              <td class="search-query">アスベスト含有建材の処理に対応できる業者を検索</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">1件</td>
+              <td><span class="badge badge-warning">確認中</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-29 14:02</td>
+              <td class="search-query">感染性医療廃棄物の収集運搬と焼却処理</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">2件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;font-family:'DM Sans',sans-serif;">2026-03-29 11:30</td>
+              <td class="search-query">工場の排水処理で発生する汚泥の脱水・乾燥処理</td>
+              <td style="font-family:'DM Sans',sans-serif;font-weight:500;">6件</td>
+              <td><span class="badge badge-success">完了</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="bottom-grid">
+      <!-- New Companies -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">新規登録業者</div>
+          <a href="companies.html" class="card-link">すべて見る</a>
+        </div>
+        <div class="card-body">
+          <div class="company-list-item">
+            <div class="company-avatar"><span class="material-symbols-outlined" style="font-size:20px;">business</span></div>
+            <div class="company-info">
+              <div class="company-name">関西環境リサイクル株式会社</div>
+              <div class="company-date">2026-03-29 登録</div>
+            </div>
+            <span class="company-tag">汚泥処理</span>
+          </div>
+          <div class="company-list-item">
+            <div class="company-avatar"><span class="material-symbols-outlined" style="font-size:20px;">business</span></div>
+            <div class="company-info">
+              <div class="company-name">株式会社グリーンテック</div>
+              <div class="company-date">2026-03-28 登録</div>
+            </div>
+            <span class="company-tag">廃プラ</span>
+          </div>
+          <div class="company-list-item">
+            <div class="company-avatar"><span class="material-symbols-outlined" style="font-size:20px;">business</span></div>
+            <div class="company-info">
+              <div class="company-name">大阪産業廃棄物処理センター</div>
+              <div class="company-date">2026-03-27 登録</div>
+            </div>
+            <span class="company-tag">総合処理</span>
+          </div>
+          <div class="company-list-item">
+            <div class="company-avatar"><span class="material-symbols-outlined" style="font-size:20px;">business</span></div>
+            <div class="company-info">
+              <div class="company-name">エコフューチャー株式会社</div>
+              <div class="company-date">2026-03-26 登録</div>
+            </div>
+            <span class="company-tag">廃油処理</span>
+          </div>
+          <div class="company-list-item">
+            <div class="company-avatar"><span class="material-symbols-outlined" style="font-size:20px;">business</span></div>
+            <div class="company-info">
+              <div class="company-name">株式会社クリーンアース</div>
+              <div class="company-date">2026-03-25 登録</div>
+            </div>
+            <span class="company-tag">がれき類</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">対応が必要</div>
+          <span class="badge badge-error" style="font-size:0.7rem;">3件</span>
+        </div>
+        <div class="card-body">
+          <div class="alert-item">
+            <div class="alert-icon warn">
+              <span class="material-symbols-outlined" style="font-size:20px;">edit_notifications</span>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">業者情報の更新依頼</div>
+              <div class="alert-desc">関西環境リサイクル株式会社より許可証情報の更新リクエストが届いています。</div>
+            </div>
+            <div class="alert-time">2時間前</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon err">
+              <span class="material-symbols-outlined" style="font-size:20px;">error</span>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">データ不整合の検出</div>
+              <div class="alert-desc">品目マスタと業者登録データの間で3件の不整合が検出されました。確認が必要です。</div>
+            </div>
+            <div class="alert-time">5時間前</div>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon info">
+              <span class="material-symbols-outlined" style="font-size:20px;">verified</span>
+            </div>
+            <div class="alert-body">
+              <div class="alert-title">許可証の有効期限通知</div>
+              <div class="alert-desc">5社の収集運搬業許可証が30日以内に期限切れとなります。</div>
+            </div>
+            <div class="alert-time">1日前</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+(function() {
+  'use strict';
+
+  // === Sidebar mobile toggle ===
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+
+  // === Ripple effect ===
+  document.querySelectorAll('[data-ripple]').forEach(el => {
+    el.addEventListener('click', function(e) {
+      const circle = document.createElement('span');
+      const d = Math.max(this.clientWidth, this.clientHeight);
+      const rect = this.getBoundingClientRect();
+      circle.style.width = circle.style.height = d + 'px';
+      circle.style.left = (e.clientX - rect.left - d / 2) + 'px';
+      circle.style.top = (e.clientY - rect.top - d / 2) + 'px';
+      circle.classList.add('ripple');
+      this.appendChild(circle);
+      setTimeout(() => circle.remove(), 500);
+    });
+  });
+
+  // === Count-up animation ===
+  function animateCountUp() {
+    document.querySelectorAll('.count-up').forEach(el => {
+      const target = parseInt(el.dataset.target, 10);
+      const duration = 1200;
+      const start = performance.now();
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(target * eased).toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
+        else el.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(update);
+    });
+  }
+
+  // === Bar chart animation ===
+  function animateBars() {
+    document.querySelectorAll('.bar').forEach((bar, i) => {
+      const h = bar.dataset.height;
+      setTimeout(() => {
+        bar.style.height = h + '%';
+      }, i * 60);
+    });
+  }
+
+  // === Donut chart (CSS conic-gradient) ===
+  function renderDonut() {
+    const chart = document.getElementById('donutChart');
+    const segments = [
+      { pct: 35, color: '#1a73e8' },
+      { pct: 20, color: '#34a853' },
+      { pct: 15, color: '#f9ab00' },
+      { pct: 12, color: '#9334e6' },
+      { pct: 18, color: '#dadce0' },
+    ];
+    let grad = '';
+    let acc = 0;
+    segments.forEach((s, i) => {
+      const start = acc;
+      acc += s.pct;
+      grad += `${s.color} ${start}% ${acc}%`;
+      if (i < segments.length - 1) grad += ', ';
+    });
+    chart.style.background = `conic-gradient(${grad})`;
+  }
+
+  // === Bell animation on load ===
+  const bellBtn = document.getElementById('bellBtn');
+  setTimeout(() => {
+    const icon = bellBtn.querySelector('.material-symbols-outlined');
+    icon.classList.add('bell-animate');
+    icon.addEventListener('animationend', () => icon.classList.remove('bell-animate'), { once: true });
+  }, 1500);
+
+  // === Init on load ===
+  window.addEventListener('DOMContentLoaded', () => {
+    renderDonut();
+    setTimeout(animateCountUp, 200);
+    setTimeout(animateBars, 400);
+  });
+})();
+</script>
+</body>
+</html>
