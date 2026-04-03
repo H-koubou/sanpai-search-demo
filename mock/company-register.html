@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>業者登録 | 産廃サーチ 管理画面</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a73e8;
+  --primary-light: #e8f0fe;
+  --on-primary: #fff;
+  --surface: #ffffff;
+  --surface-variant: #f1f3f4;
+  --surface-container: #f8f9fa;
+  --outline: #dadce0;
+  --on-surface: #1f1f1f;
+  --on-surface-variant: #444746;
+  --secondary: #34a853;
+  --secondary-light: #e6f4ea;
+  --error: #ea4335;
+  --error-light: #fce8e6;
+  --warning: #f9ab00;
+  --warning-light: #fef7e0;
+  --tertiary: #9334e6;
+  --tertiary-light: #f3e8fd;
+  --orange: #fa7b17;
+  --orange-light: #fef0e1;
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-3: 0 10px 20px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.05);
+  --transition: 0.2s ease;
+}
+
+html { font-size: 14px; scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+  background: var(--surface-container);
+  color: var(--on-surface);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--outline);
+  text-decoration: none;
+  color: var(--on-surface);
+}
+.sidebar-logo .logo-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--secondary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.sidebar-logo .logo-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 8px 8px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  font-size: 0.93rem;
+  font-weight: 400;
+  transition: background var(--transition), color var(--transition);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+.nav-item:hover {
+  background: var(--surface-variant);
+  color: var(--on-surface);
+}
+.nav-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+}
+.nav-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.nav-item .material-symbols-outlined {
+  font-size: 22px;
+  width: 24px;
+  text-align: center;
+}
+
+/* ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(26,115,232,0.15);
+  transform: scale(0);
+  animation: ripple-anim 0.5s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-footer .user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.sidebar-footer .user-info {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar-footer .user-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-footer .user-role {
+  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+}
+.sidebar-footer .logout-btn {
+  background: none;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background var(--transition);
+}
+.sidebar-footer .logout-btn:hover {
+  background: var(--surface-variant);
+}
+
+/* ===== MAIN ===== */
+.main {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  padding: 0 32px;
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--on-surface);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+}
+.topbar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.topbar-breadcrumb {
+  font-size: 0.85rem;
+  color: var(--on-surface-variant);
+  margin-left: 16px;
+}
+.topbar-breadcrumb a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.topbar-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* ===== STEP INDICATOR ===== */
+.step-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: sticky;
+  top: var(--topbar-height);
+  z-index: 40;
+  box-shadow: var(--shadow-1);
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition);
+  white-space: nowrap;
+  user-select: none;
+}
+.step-item:hover {
+  background: var(--surface-variant);
+}
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--surface-variant);
+  color: var(--on-surface-variant);
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  transition: color var(--transition);
+}
+.step-connector {
+  width: 32px;
+  height: 2px;
+  background: var(--outline);
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+.step-item.active .step-number {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.step-item.active .step-label {
+  color: var(--primary);
+  font-weight: 700;
+}
+.step-item.completed .step-number {
+  background: var(--secondary);
+  color: var(--on-primary);
+}
+.step-item.completed .step-label {
+  color: var(--secondary);
+}
+.step-connector.completed {
+  background: var(--secondary);
+}
+
+/* ===== CONTENT ===== */
+.content {
+  padding: 24px 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===== FORM CARD ===== */
+.form-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--outline);
+}
+.form-card-header .material-symbols-outlined {
+  font-size: 28px;
+  color: var(--primary);
+}
+.form-card-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.form-card-header .header-hint {
+  font-size: 0.8rem;
+  color: var(--on-surface-variant);
+  margin-left: auto;
+  font-weight: 400;
+}
+.form-card-header .header-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--warning-light);
+  color: #b06d00;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: var(--radius-lg);
+}
+
+/* ===== MATERIAL INPUT ===== */
+.field-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 0;
+}
+.field-row > * {
+  flex: 1;
+}
+.mat-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+.mat-field input,
+.mat-field textarea,
+.mat-field select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--on-surface);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.mat-field textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.6;
+}
+.mat-field select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23444746' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 36px;
+}
+.mat-field label {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--on-surface-variant);
+  pointer-events: none;
+  transition: all 0.15s ease;
+  background: var(--surface);
+  padding: 0 4px;
+}
+.mat-field textarea ~ label {
+  top: 14px;
+  transform: none;
+}
+.mat-field input:focus,
+.mat-field textarea:focus,
+.mat-field select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.mat-field input:focus ~ label,
+.mat-field textarea:focus ~ label,
+.mat-field select:focus ~ label,
+.mat-field input.has-value ~ label,
+.mat-field textarea.has-value ~ label,
+.mat-field select.has-value ~ label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+.mat-field input.has-value ~ label,
+.mat-field textarea.has-value ~ label,
+.mat-field select.has-value ~ label {
+  color: var(--on-surface-variant);
+}
+.mat-field input:focus ~ label,
+.mat-field textarea:focus ~ label,
+.mat-field select:focus ~ label {
+  color: var(--primary);
+}
+.mat-field.error input,
+.mat-field.error textarea {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px var(--error);
+}
+.mat-field.error label {
+  color: var(--error) !important;
+}
+.mat-field .error-msg {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--error);
+  margin-top: 4px;
+  padding-left: 16px;
+}
+.mat-field.error .error-msg {
+  display: block;
+}
+.mat-field .char-count {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--on-surface-variant);
+  margin-top: 4px;
+}
+
+/* Required marker */
+.mat-field.required label::after {
+  content: ' *';
+  color: var(--error);
+}
+
+/* ===== CHECKBOX GROUP ===== */
+.checkbox-group-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--on-surface);
+  margin-bottom: 10px;
+  display: block;
+}
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 16px;
+  margin-bottom: 20px;
+}
+.checkbox-grid.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.checkbox-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.cb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition);
+  font-size: 0.9rem;
+}
+.cb-item:hover {
+  background: var(--surface-variant);
+}
+.cb-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ===== CHIP SELECTOR ===== */
+.chip-category {
+  margin-bottom: 16px;
+}
+.chip-category-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip-category-label::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+.chip-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1.5px solid var(--outline);
+  background: var(--surface);
+  color: var(--on-surface-variant);
+  user-select: none;
+}
+.chip:hover {
+  background: var(--surface-variant);
+  border-color: var(--on-surface-variant);
+}
+.chip.selected {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.chip.selected .chip-remove {
+  display: inline-flex;
+}
+.chip-remove {
+  display: none;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  margin-left: 2px;
+}
+.chip-remove:hover {
+  background: rgba(26,115,232,0.2);
+}
+
+/* Negative chips (orange) */
+.chip.negative.selected {
+  background: var(--orange-light);
+  border-color: var(--orange);
+  color: #b85a00;
+}
+.chip.negative.selected .chip-remove:hover {
+  background: rgba(250,123,23,0.2);
+}
+
+/* Selected chips summary */
+.selected-chips-area {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 1.5px dashed var(--outline);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.selected-chips-area .placeholder-text {
+  font-size: 0.85rem;
+  color: var(--on-surface-variant);
+}
+.selected-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--primary-light);
+  color: var(--primary);
+  cursor: default;
+}
+.selected-chip.negative {
+  background: var(--orange-light);
+  color: #b85a00;
+}
+.selected-chip .remove-btn {
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.selected-chip .remove-btn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+/* ===== VEHICLE TABLE ===== */
+.vehicle-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+.vehicle-table th {
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--outline);
+}
+.vehicle-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--outline);
+  vertical-align: middle;
+}
+.vehicle-table select,
+.vehicle-table input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--outline);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: var(--surface);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.vehicle-table select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23444746' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 28px;
+}
+.vehicle-table select:focus,
+.vehicle-table input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.vehicle-table input[type="number"] {
+  width: 70px;
+}
+.delete-row-btn {
+  background: none;
+  border: none;
+  color: var(--error);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delete-row-btn:hover {
+  background: var(--error-light);
+}
+
+.add-row-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border: 1.5px dashed var(--primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition);
+}
+.add-row-btn:hover {
+  background: var(--primary-light);
+}
+
+/* ===== FILE UPLOAD ===== */
+.file-upload-zone {
+  border: 2px dashed var(--outline);
+  border-radius: var(--radius-sm);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  margin-bottom: 20px;
+}
+.file-upload-zone:hover,
+.file-upload-zone.dragover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.file-upload-zone .upload-icon {
+  font-size: 40px;
+  color: var(--on-surface-variant);
+  margin-bottom: 8px;
+}
+.file-upload-zone .upload-text {
+  font-size: 0.9rem;
+  color: var(--on-surface-variant);
+}
+.file-upload-zone .upload-text strong {
+  color: var(--primary);
+}
+.file-upload-zone input[type="file"] {
+  display: none;
+}
+.uploaded-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.uploaded-file-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-variant);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+.uploaded-file-item .remove-file {
+  cursor: pointer;
+  color: var(--error);
+  font-size: 18px;
+}
+
+/* ===== SLIDER ===== */
+.slider-field {
+  margin-bottom: 20px;
+}
+.slider-field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.slider-wrap input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--outline);
+  outline: none;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-2);
+}
+.slider-value {
+  min-width: 48px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===== REVIEW SECTION ===== */
+.review-block {
+  margin-bottom: 20px;
+}
+.review-block h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--outline);
+}
+.review-row {
+  display: flex;
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+.review-label {
+  width: 160px;
+  flex-shrink: 0;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+.review-value {
+  flex: 1;
+  color: var(--on-surface);
+}
+
+/* ===== BOTTOM STICKY BAR ===== */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--outline);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-lg);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-1);
+}
+.btn-primary:hover {
+  box-shadow: var(--shadow-2);
+  background: #1765cc;
+}
+.btn-outlined {
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+}
+.btn-outlined:hover {
+  background: var(--primary-light);
+}
+.btn-large {
+  padding: 14px 32px;
+  font-size: 1rem;
+  width: 100%;
+}
+.btn-success {
+  background: var(--secondary);
+  color: var(--on-primary);
+}
+.btn-success:hover {
+  background: #2d9249;
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #323232;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  box-shadow: var(--shadow-3);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== SIDEBAR OVERLAY ===== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+  .main {
+    margin-left: 0;
+  }
+  .bottom-bar {
+    left: 0;
+  }
+  .mobile-toggle {
+    display: block;
+  }
+  .topbar {
+    padding: 0 16px;
+  }
+  .step-bar {
+    padding: 12px 16px;
+    overflow-x: auto;
+  }
+  .content {
+    padding: 16px;
+  }
+  .form-card {
+    padding: 20px;
+  }
+  .field-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .checkbox-grid.cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .vehicle-table {
+    display: block;
+    overflow-x: auto;
+  }
+  .step-label {
+    display: none;
+  }
+  .step-connector {
+    width: 16px;
+  }
+  .step-item {
+    padding: 8px 10px;
+  }
+}
+@media (max-width: 600px) {
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+  .topbar-breadcrumb {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">
+    <div class="logo-icon"><span class="material-symbols-outlined filled">recycling</span></div>
+    <span class="logo-text">産廃サーチ</span>
+  </a>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">dashboard</span>
+      ダッシュボード
+    </a>
+    <a href="search.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">manage_search</span>
+      AI検索
+    </a>
+    <a href="companies.html" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">domain</span>
+      業者一覧
+    </a>
+    <a href="company-register.html" class="nav-item active" data-ripple>
+      <span class="material-symbols-outlined">add_business</span>
+      業者登録
+    </a>
+    <a href="#" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">category</span>
+      品目マスタ
+    </a>
+    <a href="#" class="nav-item" data-ripple>
+      <span class="material-symbols-outlined">settings</span>
+      設定
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar">管</div>
+    <div class="user-info">
+      <div class="user-name">管理者</div>
+      <div class="user-role">システム管理者</div>
+    </div>
+    <button class="logout-btn" title="ログアウト">
+      <span class="material-symbols-outlined" style="font-size:20px;">logout</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <!-- Top Bar -->
+  <header class="topbar">
+    <button class="mobile-toggle" id="mobileToggle">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+    <div class="topbar-title">業者登録</div>
+    <div class="topbar-breadcrumb">
+      <a href="dashboard.html">ダッシュボード</a> &gt; <a href="companies.html">業者一覧</a> &gt; 新規登録
+    </div>
+  </header>
+
+  <!-- Step Indicator -->
+  <div class="step-bar" id="stepBar">
+    <div class="step-item active" data-step="1" onclick="scrollToSection(1)">
+      <div class="step-number">1</div>
+      <div class="step-label">基本情報</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="2" onclick="scrollToSection(2)">
+      <div class="step-number">2</div>
+      <div class="step-label">許可情報</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="3" onclick="scrollToSection(3)">
+      <div class="step-number">3</div>
+      <div class="step-label">実態情報</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="4" onclick="scrollToSection(4)">
+      <div class="step-number">4</div>
+      <div class="step-label">設備・車両</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-step="5" onclick="scrollToSection(5)">
+      <div class="step-number">5</div>
+      <div class="step-label">確認</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ===================== SECTION 1: 基本情報 ===================== -->
+    <div class="form-card" id="section-1" data-section="1">
+      <div class="form-card-header">
+        <span class="material-symbols-outlined">business</span>
+        <h2>基本情報</h2>
+        <span class="header-hint">会社の基本的な情報を入力してください</span>
+      </div>
+
+      <div class="mat-field required">
+        <input type="text" id="companyName" data-required>
+        <label for="companyName">会社名</label>
+        <div class="error-msg">会社名は必須です</div>
+      </div>
+
+      <div class="mat-field">
+        <input type="text" id="representative">
+        <label for="representative">代表者名</label>
+      </div>
+
+      <div class="field-row">
+        <div class="mat-field" style="flex:0 0 140px;">
+          <input type="text" id="zipCode" placeholder="" maxlength="8">
+          <label for="zipCode">郵便番号</label>
+        </div>
+        <div class="mat-field" style="flex:0 0 160px;">
+          <select id="prefecture">
+            <option value=""></option>
+            <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option><option>秋田県</option><option>山形県</option><option>福島県</option>
+            <option>茨城県</option><option>栃木県</option><option>群馬県</option><option>埼玉県</option><option>千葉県</option><option>東京都</option><option>神奈川県</option>
+            <option>新潟県</option><option>富山県</option><option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+            <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option>
+            <option>滋賀県</option><option>京都府</option><option>大阪府</option><option>兵庫県</option><option>奈良県</option><option>和歌山県</option>
+            <option>鳥取県</option><option>島根県</option><option>岡山県</option><option>広島県</option><option>山口県</option>
+            <option>徳島県</option><option>香川県</option><option>愛媛県</option><option>高知県</option>
+            <option>福岡県</option><option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option><option>宮崎県</option><option>鹿児島県</option><option>沖縄県</option>
+          </select>
+          <label for="prefecture">都道府県</label>
+        </div>
+        <div class="mat-field">
+          <input type="text" id="city">
+          <label for="city">市区町村</label>
+        </div>
+      </div>
+
+      <div class="mat-field">
+        <input type="text" id="address">
+        <label for="address">番地・建物名</label>
+      </div>
+
+      <div class="field-row">
+        <div class="mat-field">
+          <input type="tel" id="phone">
+          <label for="phone">電話番号</label>
+        </div>
+        <div class="mat-field">
+          <input type="tel" id="fax">
+          <label for="fax">FAX番号</label>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="mat-field">
+          <input type="email" id="email">
+          <label for="email">メールアドレス</label>
+        </div>
+        <div class="mat-field">
+          <input type="url" id="website">
+          <label for="website">ウェブサイト</label>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="mat-field" style="flex:0 0 160px;">
+          <input type="number" id="foundedYear" min="1900" max="2026">
+          <label for="foundedYear">設立年</label>
+        </div>
+        <div class="mat-field" style="flex:0 0 160px;">
+          <input type="number" id="employees" min="1">
+          <label for="employees">従業員数</label>
+        </div>
+        <div style="flex:1;"></div>
+      </div>
+
+      <div class="mat-field">
+        <textarea id="companyDescription" maxlength="500"></textarea>
+        <label for="companyDescription">会社概要</label>
+        <div class="char-count"><span id="descCount">0</span> / 500</div>
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 2: 許可情報 ===================== -->
+    <div class="form-card" id="section-2" data-section="2">
+      <div class="form-card-header">
+        <span class="material-symbols-outlined">verified</span>
+        <h2>許可情報</h2>
+      </div>
+
+      <div class="mat-field">
+        <input type="text" id="permitNumber">
+        <label for="permitNumber">許可番号</label>
+      </div>
+
+      <span class="checkbox-group-label">許可種別</span>
+      <div class="checkbox-grid cols-2">
+        <label class="cb-item"><input type="checkbox" name="permitType" value="収集運搬業"> 収集運搬業</label>
+        <label class="cb-item"><input type="checkbox" name="permitType" value="処分業"> 処分業</label>
+        <label class="cb-item"><input type="checkbox" name="permitType" value="特別管理収集運搬業"> 特別管理収集運搬業</label>
+        <label class="cb-item"><input type="checkbox" name="permitType" value="特別管理処分業"> 特別管理処分業</label>
+      </div>
+
+      <span class="checkbox-group-label">許可エリア</span>
+      <div class="checkbox-grid cols-4">
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="大阪府"> 大阪府</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="兵庫県"> 兵庫県</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="京都府"> 京都府</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="奈良県"> 奈良県</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="和歌山県"> 和歌山県</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="滋賀県"> 滋賀県</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="三重県"> 三重県</label>
+        <label class="cb-item"><input type="checkbox" name="permitArea" value="愛知県"> 愛知県</label>
+      </div>
+
+      <span class="checkbox-group-label">許可品目</span>
+      <div class="checkbox-grid">
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="汚泥"> 汚泥</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="廃油"> 廃油</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="廃酸"> 廃酸</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="廃アルカリ"> 廃アルカリ</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="廃プラスチック類"> 廃プラスチック類</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="紙くず"> 紙くず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="木くず"> 木くず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="繊維くず"> 繊維くず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="動植物性残さ"> 動植物性残さ</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="ゴムくず"> ゴムくず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="金属くず"> 金属くず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="ガラス・陶磁器くず"> ガラス・陶磁器くず</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="鉱さい"> 鉱さい</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="がれき類"> がれき類</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="ばいじん"> ばいじん</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="燃え殻"> 燃え殻</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="動物のふん尿"> 動物のふん尿</label>
+        <label class="cb-item"><input type="checkbox" name="permitItem" value="動物の死体"> 動物の死体</label>
+      </div>
+
+      <span class="checkbox-group-label">許可証アップロード</span>
+      <div class="file-upload-zone" id="fileUploadZone">
+        <div class="upload-icon"><span class="material-symbols-outlined" style="font-size:40px;">cloud_upload</span></div>
+        <div class="upload-text"><strong>クリックしてファイルを選択</strong>するか、ここにドラッグ＆ドロップ</div>
+        <div style="font-size:0.78rem;color:var(--on-surface-variant);margin-top:4px;">PDF, JPG, PNG（最大10MB）</div>
+        <input type="file" id="permitFile" accept=".pdf,.jpg,.jpeg,.png" multiple>
+      </div>
+      <div class="uploaded-files" id="uploadedFiles"></div>
+    </div>
+
+    <!-- ===================== SECTION 3: 実態情報 ===================== -->
+    <div class="form-card" id="section-3" data-section="3">
+      <div class="form-card-header">
+        <span class="material-symbols-outlined">star</span>
+        <h2>実態情報（差別化の核）</h2>
+        <div class="header-badge">
+          <span class="material-symbols-outlined" style="font-size:16px;">info</span>
+          この情報が検索精度を決定します
+        </div>
+      </div>
+
+      <!-- メイン事業 -->
+      <div class="field-row">
+        <div class="mat-field">
+          <select id="mainBusiness">
+            <option value=""></option>
+            <option value="汚泥処理">汚泥処理</option>
+            <option value="廃油処理">廃油処理</option>
+            <option value="建設廃材処理">建設廃材処理</option>
+            <option value="特管産廃処理">特管産廃処理</option>
+            <option value="リサイクル">リサイクル</option>
+            <option value="総合産廃処理">総合産廃処理</option>
+            <option value="医療廃棄物処理">医療廃棄物処理</option>
+            <option value="食品廃棄物処理">食品廃棄物処理</option>
+            <option value="その他">その他</option>
+          </select>
+          <label for="mainBusiness">メイン事業</label>
+        </div>
+        <div style="flex:0 0 280px;">
+          <div class="slider-field">
+            <label>売上比率</label>
+            <div class="slider-wrap">
+              <input type="range" id="revenueRatio" min="0" max="100" value="60">
+              <div class="slider-value" id="revenueRatioValue">60%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 得意品目 -->
+      <span class="checkbox-group-label">得意品目（実際に積極的に対応したい品目）</span>
+      <div class="selected-chips-area" id="strongItemsSelected">
+        <span class="placeholder-text">下のリストからクリックして追加してください</span>
+      </div>
+
+      <div class="chip-category">
+        <div class="chip-category-label">汚泥系</div>
+        <div class="chip-pool" data-target="strongItemsSelected" data-type="positive">
+          <div class="chip" data-value="建設汚泥">建設汚泥</div>
+          <div class="chip" data-value="有機汚泥">有機汚泥</div>
+          <div class="chip" data-value="無機汚泥">無機汚泥</div>
+          <div class="chip" data-value="含油汚泥">含油汚泥</div>
+          <div class="chip" data-value="ビルピット汚泥">ビルピット汚泥</div>
+          <div class="chip" data-value="受水槽汚泥">受水槽汚泥</div>
+          <div class="chip" data-value="めっき汚泥">めっき汚泥</div>
+          <div class="chip" data-value="食品汚泥">食品汚泥</div>
+        </div>
+      </div>
+      <div class="chip-category">
+        <div class="chip-category-label">廃油系</div>
+        <div class="chip-pool" data-target="strongItemsSelected" data-type="positive">
+          <div class="chip" data-value="切削油">切削油</div>
+          <div class="chip" data-value="潤滑油">潤滑油</div>
+          <div class="chip" data-value="洗浄油">洗浄油</div>
+          <div class="chip" data-value="食用廃油">食用廃油</div>
+          <div class="chip" data-value="重油スラッジ">重油スラッジ</div>
+        </div>
+      </div>
+      <div class="chip-category">
+        <div class="chip-category-label">廃プラ系</div>
+        <div class="chip-pool" data-target="strongItemsSelected" data-type="positive">
+          <div class="chip" data-value="PET">PET</div>
+          <div class="chip" data-value="PVC">PVC</div>
+          <div class="chip" data-value="PE">PE</div>
+          <div class="chip" data-value="PP">PP</div>
+          <div class="chip" data-value="FRP">FRP</div>
+          <div class="chip" data-value="発泡スチロール">発泡スチロール</div>
+        </div>
+      </div>
+
+      <!-- 消極的品目 -->
+      <span class="checkbox-group-label" style="margin-top:24px;">消極的品目（許可はあるが対応したくない品目）</span>
+      <div class="selected-chips-area" id="weakItemsSelected">
+        <span class="placeholder-text">下のリストからクリックして追加してください</span>
+      </div>
+
+      <div class="chip-category">
+        <div class="chip-category-label">品目選択</div>
+        <div class="chip-pool" data-target="weakItemsSelected" data-type="negative">
+          <div class="chip negative" data-value="建設汚泥">建設汚泥</div>
+          <div class="chip negative" data-value="有機汚泥">有機汚泥</div>
+          <div class="chip negative" data-value="無機汚泥">無機汚泥</div>
+          <div class="chip negative" data-value="含油汚泥">含油汚泥</div>
+          <div class="chip negative" data-value="めっき汚泥">めっき汚泥</div>
+          <div class="chip negative" data-value="切削油">切削油</div>
+          <div class="chip negative" data-value="重油スラッジ">重油スラッジ</div>
+          <div class="chip negative" data-value="PVC">PVC</div>
+          <div class="chip negative" data-value="FRP">FRP</div>
+          <div class="chip negative" data-value="廃酸">廃酸</div>
+          <div class="chip negative" data-value="廃アルカリ">廃アルカリ</div>
+          <div class="chip negative" data-value="ばいじん">ばいじん</div>
+          <div class="chip negative" data-value="鉱さい">鉱さい</div>
+        </div>
+      </div>
+
+      <!-- 実際の対応エリア -->
+      <div class="mat-field" style="margin-top:24px;">
+        <textarea id="actualArea" maxlength="300" placeholder=""></textarea>
+        <label for="actualArea">実際の対応エリア（許可エリアと異なる場合）</label>
+        <div class="char-count"><span id="areaCount">0</span> / 300</div>
+      </div>
+
+      <!-- 得意な排出元業種 -->
+      <span class="checkbox-group-label">得意な排出元業種</span>
+      <div class="checkbox-grid">
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="建設業"> 建設業</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="製造業"> 製造業</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="食品業"> 食品業</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="医療機関"> 医療機関</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="ビル管理"> ビル管理</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="小売業"> 小売業</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="飲食業"> 飲食業</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="自動車関連"> 自動車関連</label>
+        <label class="cb-item"><input type="checkbox" name="clientIndustry" value="化学工業"> 化学工業</label>
+      </div>
+
+      <!-- 対応可能な特殊条件 -->
+      <span class="checkbox-group-label">対応可能な特殊条件</span>
+      <div class="checkbox-grid">
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="夜間作業"> 夜間作業</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="休日対応"> 休日対応</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="狭小地"> 狭小地</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="地下作業"> 地下作業</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="高所作業"> 高所作業</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="少量対応"> 少量対応</label>
+        <label class="cb-item"><input type="checkbox" name="specialCond" value="緊急対応"> 緊急対応</label>
+      </div>
+
+      <!-- PR文 -->
+      <div class="mat-field" style="margin-top:8px;">
+        <textarea id="prText" maxlength="1000" style="min-height:140px;" placeholder=""></textarea>
+        <label for="prText">自由記述PR（AIが参照する情報）</label>
+        <div class="char-count"><span id="prCount">0</span> / 1000</div>
+      </div>
+      <div style="font-size:0.78rem;color:var(--on-surface-variant);margin-top:-12px;margin-bottom:16px;padding-left:4px;">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:text-top;">lightbulb</span>
+        この内容はAIマッチングの参照情報として使われます。強みや特徴、得意な作業を具体的に記述すると検索精度が向上します。
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 4: 設備・車両情報 ===================== -->
+    <div class="form-card" id="section-4" data-section="4">
+      <div class="form-card-header">
+        <span class="material-symbols-outlined">local_shipping</span>
+        <h2>設備・車両情報</h2>
+      </div>
+
+      <span class="checkbox-group-label">保有車両一覧</span>
+      <table class="vehicle-table" id="vehicleTable">
+        <thead>
+          <tr>
+            <th style="width:25%;">車種</th>
+            <th style="width:15%;">サイズ</th>
+            <th style="width:10%;">台数</th>
+            <th style="width:40%;">特記事項</th>
+            <th style="width:10%;"></th>
+          </tr>
+        </thead>
+        <tbody id="vehicleBody">
+          <tr>
+            <td>
+              <select>
+                <option value="">選択</option>
+                <option value="バキューム車" selected>バキューム車</option>
+                <option value="強力吸引車">強力吸引車</option>
+                <option value="アームロール車">アームロール車</option>
+                <option value="ダンプ">ダンプ</option>
+                <option value="タンクローリー">タンクローリー</option>
+                <option value="ウイング車">ウイング車</option>
+                <option value="平ボディ">平ボディ</option>
+                <option value="その他">その他</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option value="">選択</option>
+                <option value="2t">2t</option>
+                <option value="4t" selected>4t</option>
+                <option value="8t">8t</option>
+                <option value="10t">10t</option>
+                <option value="その他">その他</option>
+              </select>
+            </td>
+            <td><input type="number" value="2" min="1"></td>
+            <td><input type="text" value="ホース延長30m対応" placeholder="例: 超低床2.0m"></td>
+            <td><button class="delete-row-btn" onclick="deleteVehicleRow(this)" title="削除"><span class="material-symbols-outlined">delete</span></button></td>
+          </tr>
+          <tr>
+            <td>
+              <select>
+                <option value="">選択</option>
+                <option value="バキューム車">バキューム車</option>
+                <option value="強力吸引車" selected>強力吸引車</option>
+                <option value="アームロール車">アームロール車</option>
+                <option value="ダンプ">ダンプ</option>
+                <option value="タンクローリー">タンクローリー</option>
+                <option value="ウイング車">ウイング車</option>
+                <option value="平ボディ">平ボディ</option>
+                <option value="その他">その他</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option value="">選択</option>
+                <option value="2t">2t</option>
+                <option value="4t">4t</option>
+                <option value="8t" selected>8t</option>
+                <option value="10t">10t</option>
+                <option value="その他">その他</option>
+              </select>
+            </td>
+            <td><input type="number" value="1" min="1"></td>
+            <td><input type="text" value="ホース延長50m対応" placeholder="例: 超低床2.0m"></td>
+            <td><button class="delete-row-btn" onclick="deleteVehicleRow(this)" title="削除"><span class="material-symbols-outlined">delete</span></button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addVehicleRow()">
+        <span class="material-symbols-outlined">add</span>
+        車両を追加
+      </button>
+
+      <span class="checkbox-group-label" style="margin-top:28px;">処理施設</span>
+      <div class="checkbox-grid">
+        <label class="cb-item"><input type="checkbox" name="facility" value="焼却施設"> 焼却施設</label>
+        <label class="cb-item"><input type="checkbox" name="facility" value="破砕施設"> 破砕施設</label>
+        <label class="cb-item"><input type="checkbox" name="facility" value="脱水施設"> 脱水施設</label>
+        <label class="cb-item"><input type="checkbox" name="facility" value="堆肥化施設"> 堆肥化施設</label>
+        <label class="cb-item"><input type="checkbox" name="facility" value="最終処分場"> 最終処分場</label>
+        <label class="cb-item"><input type="checkbox" name="facility" value="リサイクル施設"> リサイクル施設</label>
+      </div>
+
+      <div class="mat-field">
+        <input type="text" id="processingCapacity" placeholder="">
+        <label for="processingCapacity">処理能力</label>
+      </div>
+      <div style="font-size:0.78rem;color:var(--on-surface-variant);margin-top:-14px;margin-bottom:16px;padding-left:4px;">例: 月間100トン、日量5トン</div>
+
+      <div class="mat-field">
+        <textarea id="specialEquipment" maxlength="500"></textarea>
+        <label for="specialEquipment">特殊設備・資格</label>
+        <div class="char-count"><span id="equipCount">0</span> / 500</div>
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 5: 確認 ===================== -->
+    <div class="form-card" id="section-5" data-section="5">
+      <div class="form-card-header">
+        <span class="material-symbols-outlined">fact_check</span>
+        <h2>確認</h2>
+        <span class="header-hint">入力内容をご確認ください</span>
+      </div>
+
+      <div id="reviewContent">
+        <div class="review-block">
+          <h4>基本情報</h4>
+          <div class="review-row"><div class="review-label">会社名</div><div class="review-value" id="rv-companyName">-</div></div>
+          <div class="review-row"><div class="review-label">代表者名</div><div class="review-value" id="rv-representative">-</div></div>
+          <div class="review-row"><div class="review-label">所在地</div><div class="review-value" id="rv-address">-</div></div>
+          <div class="review-row"><div class="review-label">電話番号</div><div class="review-value" id="rv-phone">-</div></div>
+          <div class="review-row"><div class="review-label">メールアドレス</div><div class="review-value" id="rv-email">-</div></div>
+          <div class="review-row"><div class="review-label">設立年</div><div class="review-value" id="rv-founded">-</div></div>
+          <div class="review-row"><div class="review-label">従業員数</div><div class="review-value" id="rv-employees">-</div></div>
+        </div>
+        <div class="review-block">
+          <h4>許可情報</h4>
+          <div class="review-row"><div class="review-label">許可番号</div><div class="review-value" id="rv-permitNumber">-</div></div>
+          <div class="review-row"><div class="review-label">許可種別</div><div class="review-value" id="rv-permitType">-</div></div>
+          <div class="review-row"><div class="review-label">許可エリア</div><div class="review-value" id="rv-permitArea">-</div></div>
+          <div class="review-row"><div class="review-label">許可品目</div><div class="review-value" id="rv-permitItems">-</div></div>
+        </div>
+        <div class="review-block">
+          <h4>実態情報</h4>
+          <div class="review-row"><div class="review-label">メイン事業</div><div class="review-value" id="rv-mainBusiness">-</div></div>
+          <div class="review-row"><div class="review-label">得意品目</div><div class="review-value" id="rv-strongItems">-</div></div>
+          <div class="review-row"><div class="review-label">消極的品目</div><div class="review-value" id="rv-weakItems">-</div></div>
+          <div class="review-row"><div class="review-label">得意な排出元</div><div class="review-value" id="rv-clientIndustry">-</div></div>
+          <div class="review-row"><div class="review-label">特殊条件</div><div class="review-value" id="rv-specialCond">-</div></div>
+        </div>
+        <div class="review-block">
+          <h4>設備・車両</h4>
+          <div class="review-row"><div class="review-label">保有車両</div><div class="review-value" id="rv-vehicles">-</div></div>
+          <div class="review-row"><div class="review-label">処理施設</div><div class="review-value" id="rv-facilities">-</div></div>
+          <div class="review-row"><div class="review-label">処理能力</div><div class="review-value" id="rv-capacity">-</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px;">
+        <button class="btn btn-outlined btn-large" onclick="saveDraft()" style="flex:1;">
+          <span class="material-symbols-outlined">save</span>
+          下書き保存
+        </button>
+        <button class="btn btn-success btn-large" onclick="submitForm()" style="flex:2;">
+          <span class="material-symbols-outlined">check_circle</span>
+          上記の内容で登録する
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Bottom Sticky Bar -->
+<div class="bottom-bar">
+  <button class="btn btn-outlined" onclick="saveDraft()">
+    <span class="material-symbols-outlined">save</span>
+    下書き保存
+  </button>
+  <button class="btn btn-primary" onclick="submitForm()">
+    <span class="material-symbols-outlined">check_circle</span>
+    登録する
+  </button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== SIDEBAR TOGGLE (mobile) =====
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebarOverlay');
+document.getElementById('mobileToggle').addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+});
+
+// ===== RIPPLE EFFECT =====
+document.querySelectorAll('[data-ripple]').forEach(el => {
+  el.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    this.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+});
+
+// ===== FLOATING LABELS =====
+function updateFloatingLabels() {
+  document.querySelectorAll('.mat-field input, .mat-field textarea, .mat-field select').forEach(el => {
+    if (el.value && el.value.trim() !== '') {
+      el.classList.add('has-value');
+    } else {
+      el.classList.remove('has-value');
+    }
+  });
+}
+document.querySelectorAll('.mat-field input, .mat-field textarea, .mat-field select').forEach(el => {
+  el.addEventListener('input', updateFloatingLabels);
+  el.addEventListener('change', updateFloatingLabels);
+  el.addEventListener('blur', updateFloatingLabels);
+});
+updateFloatingLabels();
+
+// ===== CHARACTER COUNTS =====
+function setupCharCount(inputId, countId) {
+  const input = document.getElementById(inputId);
+  const count = document.getElementById(countId);
+  if (!input || !count) return;
+  const update = () => { count.textContent = input.value.length; };
+  input.addEventListener('input', update);
+  update();
+}
+setupCharCount('companyDescription', 'descCount');
+setupCharCount('actualArea', 'areaCount');
+setupCharCount('prText', 'prCount');
+setupCharCount('specialEquipment', 'equipCount');
+
+// ===== SLIDER =====
+const revenueSlider = document.getElementById('revenueRatio');
+const revenueDisplay = document.getElementById('revenueRatioValue');
+revenueSlider.addEventListener('input', () => {
+  revenueDisplay.textContent = revenueSlider.value + '%';
+});
+
+// ===== CHIP SELECTOR =====
+document.querySelectorAll('.chip-pool').forEach(pool => {
+  const targetId = pool.dataset.target;
+  const type = pool.dataset.type;
+
+  pool.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      renderSelectedChips(targetId, type);
+    });
+  });
+});
+
+function renderSelectedChips(targetId, type) {
+  const area = document.getElementById(targetId);
+  area.innerHTML = '';
+  const pools = document.querySelectorAll(`.chip-pool[data-target="${targetId}"]`);
+  let hasSelected = false;
+  pools.forEach(pool => {
+    pool.querySelectorAll('.chip.selected').forEach(chip => {
+      hasSelected = true;
+      const el = document.createElement('div');
+      el.className = 'selected-chip' + (type === 'negative' ? ' negative' : '');
+      el.innerHTML = `${chip.dataset.value}<span class="remove-btn" data-value="${chip.dataset.value}" data-target="${targetId}" data-type="${type}">&times;</span>`;
+      area.appendChild(el);
+    });
+  });
+  if (!hasSelected) {
+    area.innerHTML = '<span class="placeholder-text">下のリストからクリックして追加してください</span>';
+  }
+
+  // Remove button handlers
+  area.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const val = btn.dataset.value;
+      const tid = btn.dataset.target;
+      const tp = btn.dataset.type;
+      const pools2 = document.querySelectorAll(`.chip-pool[data-target="${tid}"]`);
+      pools2.forEach(p => {
+        p.querySelectorAll('.chip').forEach(c => {
+          if (c.dataset.value === val) c.classList.remove('selected');
+        });
+      });
+      renderSelectedChips(tid, tp);
+    });
+  });
+}
+
+// ===== VEHICLE ROWS =====
+function addVehicleRow() {
+  const tbody = document.getElementById('vehicleBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <select>
+        <option value="">選択</option>
+        <option value="バキューム車">バキューム車</option>
+        <option value="強力吸引車">強力吸引車</option>
+        <option value="アームロール車">アームロール車</option>
+        <option value="ダンプ">ダンプ</option>
+        <option value="タンクローリー">タンクローリー</option>
+        <option value="ウイング車">ウイング車</option>
+        <option value="平ボディ">平ボディ</option>
+        <option value="その他">その他</option>
+      </select>
+    </td>
+    <td>
+      <select>
+        <option value="">選択</option>
+        <option value="2t">2t</option>
+        <option value="4t">4t</option>
+        <option value="8t">8t</option>
+        <option value="10t">10t</option>
+        <option value="その他">その他</option>
+      </select>
+    </td>
+    <td><input type="number" value="1" min="1"></td>
+    <td><input type="text" placeholder="例: 超低床2.0m"></td>
+    <td><button class="delete-row-btn" onclick="deleteVehicleRow(this)" title="削除"><span class="material-symbols-outlined">delete</span></button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function deleteVehicleRow(btn) {
+  const row = btn.closest('tr');
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(20px)';
+  row.style.transition = 'all 0.2s';
+  setTimeout(() => row.remove(), 200);
+}
+
+// ===== FILE UPLOAD =====
+const uploadZone = document.getElementById('fileUploadZone');
+const fileInput = document.getElementById('permitFile');
+const uploadedFilesDiv = document.getElementById('uploadedFiles');
+let uploadedFiles = [];
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadZone.classList.add('dragover');
+});
+uploadZone.addEventListener('dragleave', () => {
+  uploadZone.classList.remove('dragover');
+});
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => {
+  handleFiles(fileInput.files);
+  fileInput.value = '';
+});
+
+function handleFiles(files) {
+  Array.from(files).forEach(f => {
+    uploadedFiles.push(f);
+    renderUploadedFiles();
+  });
+}
+function renderUploadedFiles() {
+  uploadedFilesDiv.innerHTML = '';
+  uploadedFiles.forEach((f, i) => {
+    const el = document.createElement('div');
+    el.className = 'uploaded-file-item';
+    el.innerHTML = `<span class="material-symbols-outlined" style="font-size:18px;color:var(--primary);">description</span> ${f.name} <span class="remove-file material-symbols-outlined" data-idx="${i}">close</span>`;
+    uploadedFilesDiv.appendChild(el);
+  });
+  uploadedFilesDiv.querySelectorAll('.remove-file').forEach(btn => {
+    btn.addEventListener('click', () => {
+      uploadedFiles.splice(parseInt(btn.dataset.idx), 1);
+      renderUploadedFiles();
+    });
+  });
+}
+
+// ===== SCROLL SPY & STEP INDICATOR =====
+const sections = document.querySelectorAll('.form-card[data-section]');
+const stepItems = document.querySelectorAll('.step-item');
+const stepConnectors = document.querySelectorAll('.step-connector');
+const stepBarHeight = 120; // topbar + stepbar offset
+
+function scrollToSection(num) {
+  const section = document.getElementById('section-' + num);
+  if (section) {
+    const y = section.getBoundingClientRect().top + window.pageYOffset - stepBarHeight - 16;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+}
+
+function updateStepIndicator() {
+  let currentSection = 1;
+  sections.forEach(sec => {
+    const rect = sec.getBoundingClientRect();
+    if (rect.top <= stepBarHeight + 100) {
+      currentSection = parseInt(sec.dataset.section);
+    }
+  });
+
+  stepItems.forEach((item, i) => {
+    const step = parseInt(item.dataset.step);
+    item.classList.remove('active', 'completed');
+    if (step === currentSection) {
+      item.classList.add('active');
+    } else if (step < currentSection) {
+      item.classList.add('completed');
+      item.querySelector('.step-number').innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">check</span>';
+    } else {
+      item.querySelector('.step-number').textContent = step;
+    }
+  });
+
+  stepConnectors.forEach((conn, i) => {
+    conn.classList.toggle('completed', i + 1 < currentSection);
+  });
+}
+
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => {
+      updateStepIndicator();
+      scrollTicking = false;
+    });
+    scrollTicking = true;
+  }
+});
+updateStepIndicator();
+
+// ===== REVIEW UPDATER =====
+function updateReview() {
+  const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const checked = (name) => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(c => c.value);
+
+  document.getElementById('rv-companyName').textContent = val('companyName') || '-';
+  document.getElementById('rv-representative').textContent = val('representative') || '-';
+
+  const pref = val('prefecture');
+  const city = val('city');
+  const addr = val('address');
+  const zip = val('zipCode');
+  const fullAddr = [zip ? '〒' + zip : '', pref, city, addr].filter(Boolean).join(' ');
+  document.getElementById('rv-address').textContent = fullAddr || '-';
+  document.getElementById('rv-phone').textContent = val('phone') || '-';
+  document.getElementById('rv-email').textContent = val('email') || '-';
+  document.getElementById('rv-founded').textContent = val('foundedYear') ? val('foundedYear') + '年' : '-';
+  document.getElementById('rv-employees').textContent = val('employees') ? val('employees') + '名' : '-';
+  document.getElementById('rv-permitNumber').textContent = val('permitNumber') || '-';
+  document.getElementById('rv-permitType').textContent = checked('permitType').join('、') || '-';
+  document.getElementById('rv-permitArea').textContent = checked('permitArea').join('、') || '-';
+  document.getElementById('rv-permitItems').textContent = checked('permitItem').join('、') || '-';
+
+  const mainBiz = val('mainBusiness');
+  const ratio = document.getElementById('revenueRatio').value;
+  document.getElementById('rv-mainBusiness').textContent = mainBiz ? `${mainBiz}（売上比率: ${ratio}%）` : '-';
+
+  // Strong items
+  const strongChips = [];
+  document.querySelectorAll('.chip-pool[data-target="strongItemsSelected"] .chip.selected').forEach(c => strongChips.push(c.dataset.value));
+  document.getElementById('rv-strongItems').textContent = strongChips.join('、') || '-';
+
+  // Weak items
+  const weakChips = [];
+  document.querySelectorAll('.chip-pool[data-target="weakItemsSelected"] .chip.selected').forEach(c => weakChips.push(c.dataset.value));
+  document.getElementById('rv-weakItems').textContent = weakChips.join('、') || '-';
+
+  document.getElementById('rv-clientIndustry').textContent = checked('clientIndustry').join('、') || '-';
+  document.getElementById('rv-specialCond').textContent = checked('specialCond').join('、') || '-';
+
+  // Vehicles
+  const vehicles = [];
+  document.querySelectorAll('#vehicleBody tr').forEach(row => {
+    const selects = row.querySelectorAll('select');
+    const inputs = row.querySelectorAll('input');
+    const type = selects[0]?.value;
+    const size = selects[1]?.value;
+    const count = inputs[0]?.value;
+    const note = inputs[1]?.value;
+    if (type) {
+      let v = `${type} ${size} x${count}台`;
+      if (note) v += `（${note}）`;
+      vehicles.push(v);
+    }
+  });
+  document.getElementById('rv-vehicles').textContent = vehicles.join('、') || '-';
+  document.getElementById('rv-facilities').textContent = checked('facility').join('、') || '-';
+  document.getElementById('rv-capacity').textContent = val('processingCapacity') || '-';
+}
+
+// Update review on any input change
+document.addEventListener('input', updateReview);
+document.addEventListener('change', updateReview);
+// Also update when chips change - use MutationObserver
+const chipObserver = new MutationObserver(updateReview);
+document.querySelectorAll('.selected-chips-area').forEach(area => {
+  chipObserver.observe(area, { childList: true, subtree: true });
+});
+updateReview();
+
+// ===== TOAST =====
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ===== SAVE DRAFT =====
+function saveDraft() {
+  showToast('下書きを保存しました');
+}
+
+// ===== FORM VALIDATION & SUBMIT =====
+function submitForm() {
+  let isValid = true;
+
+  // Check required fields
+  document.querySelectorAll('[data-required]').forEach(input => {
+    const field = input.closest('.mat-field');
+    if (!input.value.trim()) {
+      field.classList.add('error');
+      isValid = false;
+    } else {
+      field.classList.remove('error');
+    }
+  });
+
+  if (!isValid) {
+    showToast('必須項目を入力してください');
+    // Scroll to first error
+    const firstError = document.querySelector('.mat-field.error');
+    if (firstError) {
+      const y = firstError.getBoundingClientRect().top + window.pageYOffset - stepBarHeight - 30;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+    return;
+  }
+
+  // Update review one more time
+  updateReview();
+  showToast('業者情報を登録しました');
+}
+
+// Clear error on input
+document.querySelectorAll('[data-required]').forEach(input => {
+  input.addEventListener('input', () => {
+    if (input.value.trim()) {
+      input.closest('.mat-field').classList.remove('error');
+    }
+  });
+});
+</script>
+</body>
+</html>
