@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI検索 | 一廃サーチ - ごみ処理業者をAIが見つけます</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a73e8;
+  --primary-light: #e8f0fe;
+  --primary-dark: #1557b0;
+  --secondary: #34a853;
+  --secondary-light: #e6f4ea;
+  --surface: #ffffff;
+  --background: #f8f9fa;
+  --text: #1f1f1f;
+  --text-secondary: #5f6368;
+  --outline: #dadce0;
+  --error: #d93025;
+  --header-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-3: 0 10px 20px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.05);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', 'DM Sans', sans-serif;
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== HEADER ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  height: var(--header-height);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.logo .material-symbols-outlined {
+  font-size: 28px;
+  color: var(--primary);
+}
+
+.nav { display: flex; align-items: center; gap: 4px; }
+
+.nav a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-xl);
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav a:hover { background: var(--background); color: var(--text); }
+
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+.btn-text {
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-xl);
+  transition: background 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-text:hover { background: var(--primary-light); }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-2); }
+
+.btn-outlined {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.btn-outlined:hover { background: var(--primary-light); border-color: var(--primary); }
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--text);
+  transition: background 0.2s;
+}
+
+.hamburger:hover { background: var(--background); }
+
+/* ===== MOBILE NAV ===== */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.mobile-nav-overlay.open { opacity: 1; }
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100%;
+  background: var(--surface);
+  z-index: 201;
+  transition: right 0.3s ease;
+  padding: 24px;
+}
+
+.mobile-nav.open { right: 0; }
+
+.mobile-nav-close {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.mobile-nav-close button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--text);
+}
+
+.mobile-nav a {
+  display: block;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+
+.mobile-nav a:hover { background: var(--background); }
+
+.mobile-nav .mobile-nav-actions {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--outline);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.chat-column { flex: 0 0 65%; min-width: 0; }
+.sidebar-column { flex: 0 0 calc(35% - 24px); min-width: 0; }
+
+/* ===== CHAT CARD ===== */
+.chat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-height) - 48px);
+  overflow: hidden;
+}
+
+.chat-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--outline);
+  flex-shrink: 0;
+}
+
+.chat-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-topbar-left .material-symbols-outlined {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+.chat-topbar-left span:last-child {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.btn-new-search {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-xl);
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.btn-new-search:hover { background: var(--primary-light); }
+
+/* ===== CHAT MESSAGES ===== */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-messages::-webkit-scrollbar { width: 6px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--outline); border-radius: 3px; }
+
+.msg { max-width: 88%; display: flex; flex-direction: column; gap: 4px; animation: msgIn 0.3s ease; }
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-ai { align-self: flex-start; }
+.msg-user { align-self: flex-end; }
+
+.msg-bubble {
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.msg-ai .msg-bubble {
+  background: var(--background);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+
+.msg-user .msg-bubble {
+  background: var(--primary);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.msg-time {
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 0 4px;
+}
+
+.msg-user .msg-time { text-align: right; }
+
+/* Typing indicator */
+.typing-indicator {
+  display: none;
+  align-self: flex-start;
+  max-width: 88%;
+}
+
+.typing-indicator.active { display: flex; flex-direction: column; gap: 4px; }
+
+.typing-bubble {
+  background: var(--background);
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  border-bottom-left-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.typing-dots { display: flex; gap: 4px; }
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  animation: bounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.typing-label { font-size: 12px; color: var(--text-secondary); }
+
+/* ===== RESULT CARD (inside AI bubble) ===== */
+.result-cards-wrapper { margin-top: 12px; display: flex; flex-direction: column; gap: 12px; }
+
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  border-left: 4px solid var(--secondary);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.result-card:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
+
+.result-card.match-medium { border-left-color: var(--primary); }
+
+.result-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+
+.result-card-name { font-size: 16px; font-weight: 700; color: var(--text); }
+
+.match-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.match-badge.high { background: var(--secondary-light); color: var(--secondary); }
+.match-badge.medium { background: var(--primary-light); color: var(--primary); }
+
+.result-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+.result-tag {
+  padding: 3px 10px;
+  border-radius: var(--radius-xl);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-blue { background: #e3f2fd; color: #1565c0; }
+.tag-green { background: #e8f5e9; color: #2e7d32; }
+.tag-orange { background: #fff3e0; color: #e65100; }
+.tag-purple { background: #f3e5f5; color: #7b1fa2; }
+.tag-red { background: #fce4ec; color: #c62828; }
+.tag-teal { background: #e0f2f1; color: #00695c; }
+
+.result-info-grid {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.result-info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.result-info-item:not(:last-child)::after {
+  content: '';
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--outline);
+  margin: 0 10px;
+}
+
+.result-info-item .material-symbols-outlined { font-size: 16px; }
+
+.result-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  margin-bottom: 12px;
+}
+
+.result-spec {
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.result-spec::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+.result-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.result-actions .btn-outlined {
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+.result-actions .btn-primary {
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+/* ===== CHAT INPUT ===== */
+.chat-input-area {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--outline);
+  flex-shrink: 0;
+}
+
+.example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.example-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.example-chip:hover { background: #d2e3fc; border-color: var(--primary); }
+
+.example-chip .material-symbols-outlined { font-size: 16px; }
+
+.chat-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.chat-textarea-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.chat-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: none;
+  overflow: hidden;
+  min-height: 44px;
+  max-height: 120px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: var(--text);
+  background: var(--background);
+}
+
+.chat-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.12);
+  background: var(--surface);
+}
+
+.chat-textarea::placeholder { color: #9aa0a6; }
+
+.btn-send {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.btn-send:hover { background: var(--primary-dark); box-shadow: var(--shadow-2); }
+.btn-send:active { transform: scale(0.93); }
+
+.btn-send .material-symbols-outlined { font-size: 22px; }
+
+/* ===== SIDEBAR ===== */
+.sidebar-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.sidebar-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-card-title .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.filter-group { margin-bottom: 16px; }
+
+.filter-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus { border-color: var(--primary); }
+
+.filter-checkboxes { display: flex; flex-direction: column; gap: 8px; }
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.btn-filter {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* Popular searches */
+.popular-list { display: flex; flex-direction: column; gap: 2px; }
+
+.popular-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s;
+  gap: 8px;
+}
+
+.popular-item:hover { background: var(--background); }
+
+.popular-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  min-width: 0;
+}
+
+.popular-item-left .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.popular-item-left span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popular-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  background: var(--background);
+  padding: 2px 8px;
+  border-radius: var(--radius-xl);
+}
+
+/* ===== RIPPLE ===== */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: scale(0);
+  animation: rippleAnim 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hamburger { display: flex; }
+
+  .main {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .chat-column, .sidebar-column { flex: none; width: 100%; }
+
+  .chat-card { height: calc(100vh - var(--header-height) - 32px); }
+
+  .example-chips { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .example-chip { flex-shrink: 0; }
+
+  .result-specs { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .header-inner { padding: 0 16px; }
+  .header-actions .btn-primary { display: none; }
+
+  .chat-messages { padding: 14px; }
+  .chat-input-area { padding: 10px 14px 14px; }
+
+  .msg { max-width: 95%; }
+
+  .result-card { padding: 14px; }
+  .result-card-name { font-size: 14px; }
+  .result-info-grid { flex-direction: column; gap: 4px; }
+  .result-info-item:not(:last-child)::after { display: none; }
+  .result-actions { flex-direction: column; }
+  .result-actions .btn-outlined,
+  .result-actions .btn-primary { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="material-symbols-outlined">delete_sweep</span>
+      一廃サーチ
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">サービス紹介</a>
+      <a href="index.html#steps">使い方</a>
+      <a href="index.html#stats">料金</a>
+      <a href="#">お問い合わせ</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="#" class="btn-text">ログイン</a>
+      <a href="#" class="btn-primary">
+        <span class="material-symbols-outlined" style="font-size:18px">search</span>
+        無料で検索
+      </a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="メニュー">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== MOBILE NAV ===== -->
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-close">
+    <button id="mobileNavClose" aria-label="閉じる"><span class="material-symbols-outlined">close</span></button>
+  </div>
+  <a href="index.html">サービス紹介</a>
+  <a href="index.html#steps">使い方</a>
+  <a href="index.html#stats">料金</a>
+  <a href="#">お問い合わせ</a>
+  <div class="mobile-nav-actions">
+    <a href="#" class="btn-text" style="text-align:center;">ログイン</a>
+    <a href="#" class="btn-primary" style="justify-content:center;">無料で検索</a>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+  <!-- CHAT COLUMN -->
+  <div class="chat-column">
+    <div class="chat-card">
+      <div class="chat-topbar">
+        <div class="chat-topbar-left">
+          <span class="material-symbols-outlined">smart_toy</span>
+          <span>AI検索コンシェルジュ</span>
+        </div>
+        <button class="btn-new-search" id="btnNewSearch">
+          <span class="material-symbols-outlined" style="font-size:18px">refresh</span>
+          新しい検索
+        </button>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome message -->
+        <div class="msg msg-ai">
+          <div class="msg-bubble">こんにちは！ごみ処理業者の検索をお手伝いします。<br><br>業種・ごみの種類・市区町村を教えてください。飲食店や小売店、家庭など、どんな場所から出るごみでも対応できる業者をご提案します。</div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-bubble">
+            <div class="typing-dots">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+            <span class="typing-label">検索中...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="example-chips" id="exampleChips">
+          <button class="example-chip" data-query="居酒屋から出る生ゴミを定期回収してほしい">
+            <span class="material-symbols-outlined">lightbulb</span>
+            居酒屋の生ゴミを定期回収
+          </button>
+          <button class="example-chip" data-query="飲食店の廃食油を回収してほしい">
+            <span class="material-symbols-outlined">lightbulb</span>
+            飲食店の廃食油を回収
+          </button>
+          <button class="example-chip" data-query="スーパーの段ボールと古紙を回収してほしい">
+            <span class="material-symbols-outlined">lightbulb</span>
+            スーパーの段ボール・古紙
+          </button>
+          <button class="example-chip" data-query="オフィスから出る廃プラと雑ごみを回収してほしい">
+            <span class="material-symbols-outlined">lightbulb</span>
+            オフィスの廃プラ・雑ごみ
+          </button>
+        </div>
+
+        <div class="chat-input-row">
+          <div class="chat-textarea-wrapper">
+            <textarea class="chat-textarea" id="chatInput" placeholder="業種・ごみの種類・市区町村を入力（例：渋谷区の居酒屋から生ゴミと廃食油が出ます）" rows="1"></textarea>
+          </div>
+          <button class="btn-send" id="btnSend" aria-label="送信">
+            <span class="material-symbols-outlined">arrow_upward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR COLUMN -->
+  <div class="sidebar-column">
+    <!-- Filter Card -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">
+        <span class="material-symbols-outlined">tune</span>
+        条件で絞り込む
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">エリア（都道府県）</label>
+        <select class="filter-select" id="filterArea">
+          <option value="">全エリア</option>
+          <option value="東京都">東京都</option>
+          <option value="神奈川県">神奈川県</option>
+          <option value="大阪府">大阪府</option>
+          <option value="愛知県">愛知県</option>
+          <option value="埼玉県">埼玉県</option>
+          <option value="千葉県">千葉県</option>
+          <option value="兵庫県">兵庫県</option>
+          <option value="福岡県">福岡県</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">ごみの種類</label>
+        <select class="filter-select" id="filterCategory">
+          <option value="">全品目</option>
+          <option value="生ゴミ・食品廃棄物">生ゴミ・食品廃棄物</option>
+          <option value="廃食油">廃食油</option>
+          <option value="古紙・段ボール">古紙・段ボール</option>
+          <option value="廃プラスチック">廃プラスチック</option>
+          <option value="粗大ごみ">粗大ごみ</option>
+          <option value="金属くず">金属くず</option>
+          <option value="繊維くず">繊維くず</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">業種</label>
+        <select class="filter-select" id="filterIndustry">
+          <option value="">全業種</option>
+          <option value="飲食店">飲食店</option>
+          <option value="小売店・スーパー">小売店・スーパー</option>
+          <option value="オフィス・事務所">オフィス・事務所</option>
+          <option value="ホテル・宿泊施設">ホテル・宿泊施設</option>
+          <option value="医療・福祉施設">医療・福祉施設</option>
+          <option value="家庭">家庭</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">収集オプション</label>
+        <div class="filter-checkboxes">
+          <label class="filter-checkbox">
+            <input type="checkbox" value="定期回収対応"> 定期回収対応
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" value="少量対応"> 少量でも対応可
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" value="リサイクル対応"> リサイクル対応
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" value="夜間・早朝対応"> 夜間・早朝対応
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" value="緊急対応"> 緊急対応
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-outlined btn-filter" id="btnFilter">
+        <span class="material-symbols-outlined" style="font-size:18px">filter_alt</span>
+        絞り込む
+      </button>
+    </div>
+
+    <!-- Popular Searches Card -->
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">
+        <span class="material-symbols-outlined">trending_up</span>
+        人気の検索
+      </div>
+      <div class="popular-list">
+        <div class="popular-item" data-query="飲食店 生ゴミ 定期回収">
+          <div class="popular-item-left">
+            <span class="material-symbols-outlined">search</span>
+            <span>飲食店 生ゴミ 定期回収</span>
+          </div>
+          <span class="popular-count">312件</span>
+        </div>
+        <div class="popular-item" data-query="廃食油 回収 リサイクル">
+          <div class="popular-item-left">
+            <span class="material-symbols-outlined">search</span>
+            <span>廃食油 回収・リサイクル</span>
+          </div>
+          <span class="popular-count">256件</span>
+        </div>
+        <div class="popular-item" data-query="古紙 段ボール 回収">
+          <div class="popular-item-left">
+            <span class="material-symbols-outlined">search</span>
+            <span>古紙・段ボール 回収</span>
+          </div>
+          <span class="popular-count">198件</span>
+        </div>
+        <div class="popular-item" data-query="スーパー 食品廃棄物 収集">
+          <div class="popular-item-left">
+            <span class="material-symbols-outlined">search</span>
+            <span>スーパー 食品廃棄物</span>
+          </div>
+          <span class="popular-count">167件</span>
+        </div>
+        <div class="popular-item" data-query="粗大ごみ 不用品回収">
+          <div class="popular-item-left">
+            <span class="material-symbols-outlined">search</span>
+            <span>粗大ごみ・不用品回収</span>
+          </div>
+          <span class="popular-count">134件</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ===== COMPANY DATA =====
+const companies = [
+  {
+    id: 1,
+    name: '東都クリーンサービス株式会社',
+    keywords: ['飲食店', '生ゴミ', '食品廃棄物', '定期', '回収', '居酒屋', 'レストラン', '食品残渣', '臭気対策', '生ごみ', '定期回収'],
+    specialty: '飲食店生ゴミ専門',
+    area: '東京都',
+    mainBiz: '飲食店廃棄物 定期収集',
+    certs: '一般廃棄物収集運搬許可',
+    tags: [
+      { text: '飲食店専門', cls: 'tag-blue' },
+      { text: '定期回収', cls: 'tag-green' },
+      { text: '臭気対策', cls: 'tag-teal' },
+      { text: '夜間対応', cls: 'tag-orange' }
+    ],
+    specs: [
+      '密閉型収集車 x 6台',
+      '週1〜5回 定期プラン対応',
+      '夜間・早朝収集可',
+      '臭気抑制容器無料貸出'
+    ],
+    features: ['定期回収対応', '夜間・早朝対応'],
+    categories: ['生ゴミ・食品廃棄物'],
+    industries: ['飲食店'],
+    desc: '飲食店の生ゴミ・食品廃棄物の定期収集に特化。週1〜5回の定期プランで臭気・衛生問題を解決します。'
+  },
+  {
+    id: 2,
+    name: '株式会社グリーンオイル',
+    keywords: ['廃食油', '食用廃油', '廃油', 'リサイクル', '飲食店', '回収', 'バイオ燃料', '油', '天ぷら油', '揚げ油'],
+    specialty: '廃食油リサイクル',
+    area: '大阪府',
+    mainBiz: '廃食油 回収・バイオ燃料化',
+    certs: '一般廃棄物収集運搬許可・再生利用業者認定',
+    tags: [
+      { text: '廃食油専門', cls: 'tag-orange' },
+      { text: 'バイオ燃料化', cls: 'tag-green' },
+      { text: 'リサイクル率100%', cls: 'tag-teal' }
+    ],
+    specs: [
+      'タンクローリー x 4台',
+      '18Lタンク1缶から回収可',
+      'バイオディーゼル燃料に再生',
+      '回収証明書発行対応'
+    ],
+    features: ['少量対応', 'リサイクル対応'],
+    categories: ['廃食油'],
+    industries: ['飲食店', '小売店・スーパー'],
+    desc: '飲食店・給食施設から出る廃食油を全量バイオディーゼル燃料にリサイクル。18Lタンク1缶から回収可能。'
+  },
+  {
+    id: 3,
+    name: '関東古紙リサイクル株式会社',
+    keywords: ['古紙', '段ボール', 'ダンボール', '新聞', '雑誌', 'リサイクル', '紙', '回収', 'スーパー', '小売', '古紙回収'],
+    specialty: '古紙・段ボールリサイクル',
+    area: '神奈川県',
+    mainBiz: '古紙・段ボール 回収・リサイクル',
+    certs: '一般廃棄物収集運搬許可・優良事業者認定',
+    tags: [
+      { text: '古紙専門', cls: 'tag-blue' },
+      { text: '段ボール対応', cls: 'tag-teal' },
+      { text: 'リサイクル率98%', cls: 'tag-green' }
+    ],
+    specs: [
+      'アームロール車 x 5台',
+      '圧縮梱包機 保有',
+      '週2〜3回 定期収集対応',
+      '重量証明書・リサイクル証明発行'
+    ],
+    features: ['定期回収対応', 'リサイクル対応'],
+    categories: ['古紙・段ボール'],
+    industries: ['小売店・スーパー', 'オフィス・事務所'],
+    desc: 'スーパー・コンビニ・オフィスからの古紙・段ボールを定期回収。リサイクル率98%。重量・リサイクル証明書発行。'
+  },
+  {
+    id: 4,
+    name: '都市環境サービス株式会社',
+    keywords: ['廃プラ', '廃プラスチック', 'プラスチック', '雑ごみ', 'オフィス', '事務所', '混合廃棄物', '分別', '回収'],
+    specialty: '廃プラ・混合廃棄物',
+    area: '東京都',
+    mainBiz: '廃プラスチック・混合廃棄物 収集',
+    certs: '一般廃棄物収集運搬許可',
+    tags: [
+      { text: '廃プラ対応', cls: 'tag-purple' },
+      { text: '混合廃棄物OK', cls: 'tag-blue' },
+      { text: 'オフィス向け', cls: 'tag-teal' }
+    ],
+    specs: [
+      'パッカー車 x 8台',
+      '分別回収サービス対応',
+      '定期・スポット両対応',
+      '容器・袋 無料貸出'
+    ],
+    features: ['定期回収対応', '少量対応'],
+    categories: ['廃プラスチック'],
+    industries: ['オフィス・事務所', '小売店・スーパー'],
+    desc: 'オフィスや事務所から出る廃プラ・雑ごみを定期収集。分別回収サービスで環境負荷を低減。'
+  },
+  {
+    id: 5,
+    name: '全国生活環境協同組合',
+    keywords: ['粗大', '粗大ごみ', '不用品', '家具', '家電', '引越し', 'ホテル', '宿泊', '大量', 'スポット'],
+    specialty: '粗大ごみ・不用品回収',
+    area: '東京都',
+    mainBiz: '粗大ごみ・不用品 回収',
+    certs: '一般廃棄物収集運搬許可・古物商許可',
+    tags: [
+      { text: '粗大ごみ専門', cls: 'tag-orange' },
+      { text: '不用品回収', cls: 'tag-blue' },
+      { text: '即日対応', cls: 'tag-red' }
+    ],
+    specs: [
+      '2tトラック x 10台',
+      '即日〜翌日対応可',
+      'リユース品 査定・買取',
+      '階段・エレベーター搬出対応'
+    ],
+    features: ['少量対応', '緊急対応'],
+    categories: ['粗大ごみ'],
+    industries: ['ホテル・宿泊施設', '家庭', 'オフィス・事務所'],
+    desc: 'ホテル・施設の大量粗大ごみから家庭の不用品まで対応。リユース品の査定・買取で処理費用を削減。'
+  },
+  {
+    id: 6,
+    name: '地域クリーン株式会社',
+    keywords: ['家庭', '一般家庭', 'ごみ', '生ゴミ', '不用品', '定期', '少量', '地域', 'マンション'],
+    specialty: '家庭系ごみ全般',
+    area: '埼玉県',
+    mainBiz: '家庭系一般廃棄物 収集',
+    certs: '一般廃棄物収集運搬許可',
+    tags: [
+      { text: '家庭系対応', cls: 'tag-green' },
+      { text: '少量OK', cls: 'tag-teal' },
+      { text: '地域密着', cls: 'tag-blue' }
+    ],
+    specs: [
+      'パッカー車 x 4台',
+      '家庭ごみ全般対応',
+      '月1〜4回 定期プラン',
+      'マンション・集合住宅 対応'
+    ],
+    features: ['定期回収対応', '少量対応'],
+    categories: ['生ゴミ・食品廃棄物'],
+    industries: ['家庭'],
+    desc: '家庭・マンションから出る一般廃棄物を定期収集。少量でも対応可。地域密着で迅速な収集が強み。'
+  }
+];
+
+// ===== RESPONSE TEMPLATES =====
+function generateIntro(query, results) {
+  if (results.length === 0) {
+    return `「${query}」で検索しましたが、条件に合う業者が見つかりませんでした。検索条件を変えてお試しください。`;
+  }
+  return `「${query}」に対応可能な業者を${results.length}社見つけました。マッチ度の高い順にご紹介します。`;
+}
+
+function generateResultCardHTML(company, score) {
+  const matchPct = Math.min(98, Math.max(60, score));
+  const isHigh = matchPct >= 80;
+  const matchCls = isHigh ? 'high' : 'medium';
+  const cardCls = isHigh ? '' : 'match-medium';
+
+  const tagsHTML = company.tags.map(t => `<span class="result-tag ${t.cls}">${t.text}</span>`).join('');
+  const specsHTML = company.specs.map(s => `<div class="result-spec">${s}</div>`).join('');
+
+  return `
+    <div class="result-card ${cardCls}">
+      <div class="result-card-header">
+        <span class="result-card-name">${company.name}</span>
+        <span class="match-badge ${matchCls}">マッチ度 ${matchPct}%</span>
+      </div>
+      <div class="result-tags">${tagsHTML}</div>
+      <div class="result-info-grid">
+        <div class="result-info-item">
+          <span class="material-symbols-outlined">location_on</span>
+          ${company.area}
+        </div>
+        <div class="result-info-item">
+          <span class="material-symbols-outlined">business</span>
+          ${company.mainBiz}
+        </div>
+        <div class="result-info-item">
+          <span class="material-symbols-outlined">verified</span>
+          ${company.certs}
+        </div>
+      </div>
+      <div class="result-specs">${specsHTML}</div>
+      <p class="result-desc">${company.desc}</p>
+      <div class="result-actions">
+        <button class="btn-outlined">
+          <span class="material-symbols-outlined" style="font-size:16px">info</span>
+          詳細を見る
+        </button>
+        <button class="btn-primary">
+          <span class="material-symbols-outlined" style="font-size:16px">mail</span>
+          問い合わせる
+        </button>
+      </div>
+    </div>`;
+}
+
+// ===== SEARCH LOGIC =====
+function searchCompanies(query) {
+  const filterArea = document.getElementById('filterArea').value;
+  const filterCategory = document.getElementById('filterCategory').value;
+  const filterIndustry = document.getElementById('filterIndustry').value;
+  const checkedFeatures = Array.from(document.querySelectorAll('.filter-checkboxes input:checked')).map(cb => cb.value);
+
+  const queryLower = query.toLowerCase();
+  const scored = companies.map(c => {
+    let score = 0;
+    c.keywords.forEach(kw => {
+      if (queryLower.includes(kw.toLowerCase())) score += 20;
+    });
+    // partial match
+    if (score === 0) {
+      c.keywords.forEach(kw => {
+        for (let i = 0; i < kw.length - 1; i++) {
+          if (queryLower.includes(kw.substring(i, i + 2).toLowerCase())) {
+            score += 3;
+            break;
+          }
+        }
+      });
+    }
+    // filter penalties
+    if (filterArea && c.area !== filterArea) score -= 100;
+    if (filterCategory && !c.categories.includes(filterCategory)) score -= 100;
+    if (filterIndustry && !c.industries.includes(filterIndustry)) score -= 50;
+    checkedFeatures.forEach(f => {
+      if (!c.features.includes(f)) score -= 30;
+    });
+
+    return { company: c, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  const results = scored.filter(s => s.score > 0).slice(0, 3);
+
+  if (results.length === 0) {
+    return scored.filter(s => s.score > -50).slice(0, 2).map(s => ({ ...s, score: Math.max(s.score, 5) }));
+  }
+  return results;
+}
+
+// ===== DOM =====
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const btnSend = document.getElementById('btnSend');
+const typingIndicator = document.getElementById('typingIndicator');
+const btnNewSearch = document.getElementById('btnNewSearch');
+
+function getTimestamp() {
+  const now = new Date();
+  return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+}
+
+function addUserMessage(text) {
+  const div = document.createElement('div');
+  div.className = 'msg msg-user';
+  div.innerHTML = `<div class="msg-bubble">${escapeHTML(text)}</div><div class="msg-time">${getTimestamp()}</div>`;
+  chatMessages.insertBefore(div, typingIndicator);
+  scrollToBottom();
+}
+
+function addAIMessage(html) {
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai';
+  div.innerHTML = `<div class="msg-bubble">${html}</div><div class="msg-time">${getTimestamp()}</div>`;
+  chatMessages.insertBefore(div, typingIndicator);
+  scrollToBottom();
+}
+
+function showTyping() {
+  typingIndicator.classList.add('active');
+  scrollToBottom();
+}
+
+function hideTyping() {
+  typingIndicator.classList.remove('active');
+}
+
+function escapeHTML(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function handleSend() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  chatInput.value = '';
+  autoResize();
+  addUserMessage(text);
+  showTyping();
+
+  const delay = 1500 + Math.random() * 1000;
+  setTimeout(() => {
+    hideTyping();
+    const results = searchCompanies(text);
+    const intro = generateIntro(text, results);
+    let html = `<p>${intro}</p>`;
+
+    if (results.length > 0) {
+      html += '<div class="result-cards-wrapper">';
+      results.forEach(r => {
+        const displayScore = Math.min(98, 60 + r.score * 2);
+        html += generateResultCardHTML(r.company, displayScore);
+      });
+      html += '</div>';
+      html += `<p style="margin-top:12px;font-size:13px;color:var(--text-secondary);">さらに条件を絞りたい場合は、右の絞り込みパネルをご利用いただくか、チャットで追加の条件をお伝えください。</p>`;
+    }
+
+    addAIMessage(html);
+  }, delay);
+}
+
+// ===== AUTO-RESIZE TEXTAREA =====
+function autoResize() {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+  chatInput.style.overflowY = chatInput.scrollHeight > 120 ? 'auto' : 'hidden';
+}
+
+chatInput.addEventListener('input', autoResize);
+
+chatInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+btnSend.addEventListener('click', handleSend);
+
+// ===== EXAMPLE CHIPS =====
+document.getElementById('exampleChips').addEventListener('click', (e) => {
+  const chip = e.target.closest('.example-chip');
+  if (!chip) return;
+  const query = chip.dataset.query;
+  chatInput.value = query;
+  autoResize();
+  handleSend();
+});
+
+// ===== POPULAR SEARCHES =====
+document.querySelectorAll('.popular-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const query = item.dataset.query;
+    chatInput.value = query;
+    autoResize();
+    handleSend();
+    if (window.innerWidth <= 900) {
+      document.querySelector('.chat-card').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// ===== NEW SEARCH =====
+btnNewSearch.addEventListener('click', () => {
+  const msgs = chatMessages.querySelectorAll('.msg');
+  msgs.forEach((m, i) => { if (i > 0) m.remove(); });
+  hideTyping();
+  chatInput.value = '';
+  autoResize();
+});
+
+// ===== FILTER BUTTON =====
+document.getElementById('btnFilter').addEventListener('click', () => {
+  const currentText = chatInput.value.trim();
+  if (currentText) {
+    handleSend();
+  } else {
+    const area = document.getElementById('filterArea').value;
+    const cat = document.getElementById('filterCategory').value;
+    const industry = document.getElementById('filterIndustry').value;
+    const features = Array.from(document.querySelectorAll('.filter-checkboxes input:checked')).map(cb => cb.value);
+    let parts = [];
+    if (area) parts.push(area + 'で');
+    if (industry) parts.push(industry + 'から出る');
+    if (cat) parts.push(cat + 'を回収してほしい');
+    if (features.length) parts.push('（' + features.join('・') + '）');
+    if (parts.length) {
+      chatInput.value = parts.join('');
+      autoResize();
+      handleSend();
+    }
+  }
+});
+
+// ===== HAMBURGER MENU =====
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileNav = document.getElementById('mobileNav');
+const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+const mobileNavClose = document.getElementById('mobileNavClose');
+
+function openMobileNav() {
+  mobileNavOverlay.style.display = 'block';
+  requestAnimationFrame(() => {
+    mobileNavOverlay.classList.add('open');
+    mobileNav.classList.add('open');
+  });
+}
+
+function closeMobileNav() {
+  mobileNavOverlay.classList.remove('open');
+  mobileNav.classList.remove('open');
+  setTimeout(() => { mobileNavOverlay.style.display = 'none'; }, 300);
+}
+
+hamburgerBtn.addEventListener('click', openMobileNav);
+mobileNavClose.addEventListener('click', closeMobileNav);
+mobileNavOverlay.addEventListener('click', closeMobileNav);
+
+// ===== RIPPLE EFFECT =====
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  btn.style.position = 'relative';
+  btn.style.overflow = 'hidden';
+  btn.addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+
+// ===== URL QUERY PARAM =====
+const params = new URLSearchParams(window.location.search);
+const initialQuery = params.get('q');
+if (initialQuery) {
+  chatInput.value = initialQuery;
+  autoResize();
+  setTimeout(handleSend, 500);
+}
+</script>
+</body>
+</html>
